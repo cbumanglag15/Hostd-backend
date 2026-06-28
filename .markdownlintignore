@@ -1,0 +1,5 @@
+# Ignore generated and dependency content
+node_modules
+build
+.gradle
+bin
