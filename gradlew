@@ -116,6 +116,14 @@ esac
 
 CLASSPATH="\\\"\\\""
 
+# Fallback for shells where JAVA_HOME is unset/invalid: derive it from java on PATH.
+if [ -z "$JAVA_HOME" ] || [ ! -x "$JAVA_HOME/bin/java" ] ; then
+    if command -v java >/dev/null 2>&1 ; then
+        JAVA_FROM_PATH=$( command -v java )
+        JAVA_HOME=$( cd -P "$( dirname "$JAVA_FROM_PATH" )/.." > /dev/null 2>&1 && printf '%s\n' "$PWD" )
+    fi
+fi
+
 
 # Determine the Java command to use to start the JVM.
 if [ -n "$JAVA_HOME" ] ; then
@@ -169,8 +177,8 @@ fi
 #   * --module-path (only if needed)
 #   * DEFAULT_JVM_OPTS, JAVA_OPTS, and GRADLE_OPTS environment variables.
 
-# For Cygwin or MSYS, switch paths to Windows format before running java
-if "$cygwin" || "$msys" ; then
+# For Cygwin, switch paths to Windows format before running java.
+if "$cygwin" ; then
     APP_HOME=$( cygpath --path --mixed "$APP_HOME" )
     CLASSPATH=$( cygpath --path --mixed "$CLASSPATH" )
 
